@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/main.go",
+      "use": "@vercel/go"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/main.go"
+    },
+    {
+      "src": "/admin/?",
+      "dest": "frontend/index.html"
+    },
+    {
+      "src": "/login/?",
+      "dest": "frontend/index.html"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/index.html"
+    }
+  ],
+  "env": {
+    "POSTGRES_URL": "postgresql://neondb_owner:npg_FnMJCLO7il3b@ep-calm-fire-ahbt7y88-pooler.c-3.us-eas1.aws.neon.tech/neondb?sslmode=require",
+    "BLOB_READ_WRITE_TOKEN": "vercel_blob_rw_WWIYvfqXeKBn6T9P_DVeQdnfUbFLrwxBixR4fIUUrUkw0Kt"
+  },
+  "build": {
+    "env": {
+      "GO_BUILD_FLAGS": ""
+    }
+  }
+}
