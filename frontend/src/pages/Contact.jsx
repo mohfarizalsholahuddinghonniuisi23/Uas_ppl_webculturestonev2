@@ -61,8 +61,39 @@ export default function Contact({ t }) {
                 <div className="md:col-span-2 bg-white p-8 md:p-12 rounded-2xl shadow-xl border border-stone-100">
                     <form onSubmit={handleContactSubmit} className="space-y-6">
                         <div className="grid md:grid-cols-2 gap-6">
-                            <div><label className="block text-sm font-bold text-stone-700 mb-2">{t?.contact?.form_name || "Nama"}</label><input required className="w-full p-4 rounded-xl bg-stone-50 border border-stone-200 focus:ring-2 focus:ring-[#4EC5C1] outline-none" value={contactForm.name} onChange={e => setContactForm({...contactForm, name: e.target.value})}/></div>
-                            <div><label className="block text-sm font-bold text-stone-700 mb-2">{t?.contact?.form_phone || "No. HP"}</label><input required className="w-full p-4 rounded-xl bg-stone-50 border border-stone-200 focus:ring-2 focus:ring-[#4EC5C1] outline-none" value={contactForm.phone} onChange={e => setContactForm({...contactForm, phone: e.target.value})}/></div>
+                            {/* BUG-07 FIX: Nama hanya boleh huruf dan spasi */}
+                            <div>
+                                <label className="block text-sm font-bold text-stone-700 mb-2">{t?.contact?.form_name || "Nama"}</label>
+                                <input
+                                    required
+                                    maxLength={100}
+                                    className="w-full p-4 rounded-xl bg-stone-50 border border-stone-200 focus:ring-2 focus:ring-[#4EC5C1] outline-none"
+                                    value={contactForm.name}
+                                    placeholder="Contoh: Budi Santoso"
+                                    onChange={e => {
+                                        // Hanya izinkan huruf dan spasi
+                                        const val = e.target.value.replace(/[^a-zA-Z\s\u00C0-\u024F]/g, '');
+                                        setContactForm({...contactForm, name: val});
+                                    }}
+                                />
+                            </div>
+                            {/* BUG-06 FIX: No HP hanya boleh angka, +, -, spasi */}
+                            <div>
+                                <label className="block text-sm font-bold text-stone-700 mb-2">{t?.contact?.form_phone || "No. HP"}</label>
+                                <input
+                                    required
+                                    type="tel"
+                                    maxLength={20}
+                                    className="w-full p-4 rounded-xl bg-stone-50 border border-stone-200 focus:ring-2 focus:ring-[#4EC5C1] outline-none"
+                                    value={contactForm.phone}
+                                    placeholder="Contoh: 08123456789"
+                                    onChange={e => {
+                                        // Hanya izinkan angka, +, -, spasi
+                                        const val = e.target.value.replace(/[^0-9+\-\s]/g, '');
+                                        setContactForm({...contactForm, phone: val});
+                                    }}
+                                />
+                            </div>
                         </div>
                         <div><label className="block text-sm font-bold text-stone-700 mb-2">Email</label><input type="email" required className="w-full p-4 rounded-xl bg-stone-50 border border-stone-200 focus:ring-2 focus:ring-[#4EC5C1] outline-none" value={contactForm.email} onChange={e => setContactForm({...contactForm, email: e.target.value})}/></div>
                         <div><label className="block text-sm font-bold text-stone-700 mb-2">{t?.contact?.form_msg || "Pesan"}</label><textarea required rows="5" className="w-full p-4 rounded-xl bg-stone-50 border border-stone-200 focus:ring-2 focus:ring-[#4EC5C1] outline-none" value={contactForm.message} onChange={e => setContactForm({...contactForm, message: e.target.value})}></textarea></div>

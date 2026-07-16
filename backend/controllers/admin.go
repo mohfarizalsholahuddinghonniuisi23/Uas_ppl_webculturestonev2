@@ -3,16 +3,48 @@ package controllers
 import (
 	"culturstone/config"
 	"culturstone/models"
-	"culturstone/services" // Import the new services package
+	"culturstone/services"
 	"culturstone/utils"
-	"log" // Import log package
+	"fmt"
+	"log"
 	"net/http"
+	"reflect"
 	"strconv"
 	"time"
+	"unicode"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// BUG-05 FIX: validatePassword memvalidasi kekuatan password admin.
+// Password harus ≥8 karakter, mengandung huruf besar, huruf kecil, dan angka.
+func validatePassword(password string) error {
+	if len(password) < 8 {
+		return fmt.Errorf("password minimal 8 karakter")
+	}
+	var hasUpper, hasLower, hasDigit bool
+	for _, ch := range password {
+		switch {
+		case unicode.IsUpper(ch):
+			hasUpper = true
+		case unicode.IsLower(ch):
+			hasLower = true
+		case unicode.IsDigit(ch):
+			hasDigit = true
+		}
+	}
+	if !hasUpper {
+		return fmt.Errorf("password harus mengandung minimal 1 huruf kapital")
+	}
+	if !hasLower {
+		return fmt.Errorf("password harus mengandung minimal 1 huruf kecil")
+	}
+	if !hasDigit {
+		return fmt.Errorf("password harus mengandung minimal 1 angka")
+	}
+	return nil
+}
 
 type AdminInput struct {
 	Username string `json:"username"`
@@ -21,17 +53,33 @@ type AdminInput struct {
 
 // AdminRegister godoc
 // @Summary Register a new admin
-// @Description Creates a new administrator account.
+// @Description Creates a new administrator account. Hanya bisa digunakan jika belum ada admin.
 // @Tags Public
 // @Accept  json
 // @Produce  json
 // @Param   admin  body   AdminInput  true  "Admin Credentials"
-// @Success 201 {object} models.Admin
+// @Success 201 {object} gin.H
 // @Failure 400 {object} gin.H
+// @Failure 403 {object} gin.H
 // @Router /register [post]
 func AdminRegister(c *gin.Context) {
+	// BUG-01 FIX: Cek apakah sudah ada admin di database.
+	// Jika sudah ada, tolak pendaftaran (hanya 1 admin diizinkan via endpoint publik ini).
+	var count int64
+	config.DB.Model(&models.Admin{}).Count(&count)
+	if count > 0 {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Registrasi admin tidak diizinkan. Admin sudah terdaftar."})
+		return
+	}
+
 	var input AdminInput
 	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// BUG-05 FIX: Validasi kekuatan password
+	if err := validatePassword(input.Password); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -42,7 +90,9 @@ func AdminRegister(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, gin.H{"message": "Admin registered", "admin": admin})
+	// BUG-02 FIX: Response tidak mengirim objek admin (yang mengandung hash password).
+	// Hanya kirim message dan username.
+	c.JSON(http.StatusCreated, gin.H{"message": "Admin berhasil didaftarkan", "username": admin.Username})
 }
 
 // AdminLogin godoc
@@ -422,10 +472,36 @@ func AdminGetTestimoni(c *gin.Context) {
 }
 
 // Generic Delete
+// Menggunakan reflect untuk membuat instance baru setiap request,
+// sehingga tidak ada shared state antar request (menghindari race condition).
 func DeleteEntity(model interface{}) gin.HandlerFunc {
+	// Ambil tipe dari model yang diberikan (misal: *models.Product → models.Product)
+	modelType := reflect.TypeOf(model)
+	if modelType.Kind() == reflect.Ptr {
+		modelType = modelType.Elem()
+	}
+
 	return func(c *gin.Context) {
-		config.DB.Delete(model, c.Param("id"))
-		c.JSON(http.StatusOK, gin.H{"status": "deleted"})
+		id := c.Param("id")
+		if id == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "ID tidak boleh kosong"})
+			return
+		}
+
+		// Buat instance baru dari tipe model setiap request
+		newInstance := reflect.New(modelType).Interface()
+
+		result := config.DB.Delete(newInstance, id)
+		if result.Error != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus data: " + result.Error.Error()})
+			return
+		}
+		if result.RowsAffected == 0 {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Data dengan ID " + id + " tidak ditemukan"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"status": "deleted", "id": id})
 	}
 }
 

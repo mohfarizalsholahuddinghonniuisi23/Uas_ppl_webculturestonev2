@@ -5,20 +5,7 @@ import VisitorDashboard from './VisitorDashboard';
 import TestimonialManagement from './TestimonialManagement';
 import { API_URL } from '../../config';
 
-const dummyStats = {
-  totalSales: 'Rp 12.5 Jt',
-  newOrders: 15,
-  totalProducts: 245,
-  totalCustomers: 120,
-};
-
-const dummyRecentOrders = [
-  { id: 1, customer: 'John Doe', item: 'Marmer Carrara (5m²)', status: 'Pending', date: '2023-10-26' },
-  { id: 2, customer: 'Jane Smith', item: 'Granit Hitam (3m²)', status: 'Completed', date: '2023-10-25' },
-  { id: 3, customer: 'Peter Jones', item: 'Kerajinan Meja Batu', status: 'Cancelled', date: '2023-10-24' },
-  { id: 4, customer: 'Alice Brown', item: 'Patung Buddha Marmer', status: 'Pending', date: '2023-10-23' },
-  { id: 5, customer: 'Bob White', item: 'Lantai Teraso (10m²)', status: 'Completed', date: '2023-10-22' },
-];
+// BUG-08 FIX: Data dummy dihapus. Semua statistik sekarang berasal dari API /admin/stats.
 
 export default function AdminPanel({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -141,14 +128,15 @@ export default function AdminPanel({ onLogout }) {
                 {activeTab === 'dashboard' && (
                     <>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                            {/* BUG-08 FIX: Hapus persentase hardcoded yang menyesatkan. Data real dari API. */}
                             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4">
                                 <div className="p-3 bg-blue-100 rounded-full">
                                     <ShoppingCart className="text-blue-600" size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Produk</p>
-                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.products || 'N/A'}</h2>
-                                    <p className="text-xs text-emerald-600">+5% bulan lalu</p>
+                                    <p className="text-sm text-gray-500">Total Produk</p>
+                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.products ?? 'N/A'}</h2>
+                                    <p className="text-xs text-gray-400">Data dari database</p>
                                 </div>
                             </div>
                             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4">
@@ -156,9 +144,9 @@ export default function AdminPanel({ onLogout }) {
                                     <Package className="text-yellow-600" size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Portofolio</p>
-                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.portfolios || 'N/A'}</h2>
-                                    <p className="text-xs text-emerald-600">+8% bulan lalu</p>
+                                    <p className="text-sm text-gray-500">Total Portofolio</p>
+                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.portfolios ?? 'N/A'}</h2>
+                                    <p className="text-xs text-gray-400">Data dari database</p>
                                 </div>
                             </div>
                             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4">
@@ -166,9 +154,9 @@ export default function AdminPanel({ onLogout }) {
                                     <MessageSquare className="text-emerald-600" size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Pesan Masuk</p>
-                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.messages || 'N/A'}</h2>
-                                    <p className="text-xs text-red-600">-3% minggu ini</p>
+                                    <p className="text-sm text-gray-500">Total Pesan Masuk</p>
+                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.messages ?? 'N/A'}</h2>
+                                    <p className="text-xs text-gray-400">Data dari database</p>
                                 </div>
                             </div>
                             <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center space-x-4">
@@ -176,9 +164,9 @@ export default function AdminPanel({ onLogout }) {
                                     <Users className="text-purple-600" size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Testimoni</p>
-                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.testimoni || 'N/A'}</h2>
-                                    <p className="text-xs text-emerald-600">+12% bulan lalu</p>
+                                    <p className="text-sm text-gray-500">Total Testimoni</p>
+                                    <h2 className="text-2xl font-bold text-slate-800">{stats?.testimoni ?? 'N/A'}</h2>
+                                    <p className="text-xs text-gray-400">Data dari database</p>
                                 </div>
                             </div>
                         </div>
@@ -229,7 +217,8 @@ export default function AdminPanel({ onLogout }) {
                                 <form onSubmit={handleCategorySubmit} className="space-y-3">
                                     <input name="name" placeholder="Nama" className="w-full border p-3 rounded-lg focus:ring-teal-500 focus:border-teal-500 shadow-sm" defaultValue={editingItem?.Name} required/>
                                     <textarea name="description" placeholder="Deskripsi" className="w-full border p-3 rounded-lg focus:ring-teal-500 focus:border-teal-500 shadow-sm" defaultValue={editingItem?.Description}/>
-                                    <input type="file" name="image" className="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"/>
+                                    {/* BUG-03 FIX: accept="image/*" membatasi dialog file hanya menampilkan gambar */}
+                                    <input type="file" name="image" accept="image/*" className="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"/>
                                     <button className="w-full bg-teal-500 text-white py-3 rounded-lg font-bold shadow-md hover:bg-teal-600 transition-colors">Simpan</button>
                                 </form>
                             </div>
@@ -280,7 +269,8 @@ export default function AdminPanel({ onLogout }) {
                                     <input name="quality" placeholder="Kualitas" className="w-full border p-3 rounded-lg focus:ring-teal-500 focus:border-teal-500 shadow-sm" defaultValue={editingItem?.Quality}/>
                                     <input name="finishing" placeholder="Finishing" className="w-full border p-3 rounded-lg focus:ring-teal-500 focus:border-teal-500 shadow-sm" defaultValue={editingItem?.Finishing}/>
                                     <textarea name="description" placeholder="Deskripsi" className="w-full border p-3 rounded-lg focus:ring-teal-500 focus:border-teal-500 shadow-sm" defaultValue={editingItem?.Description}/>
-                                    <input type="file" name="image" className="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"/>
+                                    {/* BUG-03 FIX: accept="image/*" membatasi dialog file hanya menampilkan gambar */}
+                                    <input type="file" name="image" accept="image/*" className="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"/>
                                     <button className="w-full bg-teal-500 text-white py-3 rounded-lg font-bold shadow-md hover:bg-teal-600 transition-colors">Simpan</button>
                                 </form>
                             </div>
@@ -334,7 +324,8 @@ export default function AdminPanel({ onLogout }) {
                                 <form onSubmit={handlePortfolioSubmit} className="space-y-3">
                                     <input name="title" placeholder="Judul" className="w-full border p-3 rounded-lg focus:ring-teal-500 focus:border-teal-500 shadow-sm" defaultValue={editingItem?.Title} required/>
                                     <textarea name="description" placeholder="Deskripsi" className="w-full border p-3 rounded-lg focus:ring-teal-500 focus:border-teal-500 shadow-sm" defaultValue={editingItem?.Description}/>
-                                    <input type="file" name="image" className="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"/>
+                                    {/* BUG-03 FIX: accept="image/*" membatasi dialog file hanya menampilkan gambar */}
+                                    <input type="file" name="image" accept="image/*" className="text-sm w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"/>
                                     <button className="w-full bg-teal-500 text-white py-3 rounded-lg font-bold shadow-md hover:bg-teal-600 transition-colors">Simpan</button>
                                 </form>
                             </div>

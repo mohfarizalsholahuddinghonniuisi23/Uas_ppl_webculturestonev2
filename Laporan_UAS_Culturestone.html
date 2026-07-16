@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bug Resolution Report - Culturestone Web</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:"Times New Roman",serif; font-size:12pt; line-height:1.8; color:#000; background:#fff; }
+
+        /* COVER */
+        .cover { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:50px 60px; page-break-after:always; }
+        .logo-box { border:3px double #000; padding:20px 50px; margin-bottom:25px; }
+        .logo-box h1 { font-size:15pt; font-weight:bold; margin-bottom:5px; }
+        .logo-box h2 { font-size:13pt; font-weight:normal; margin-bottom:3px; }
+        .logo-box p  { font-size:12pt; }
+        .divider     { border:none; border-top:2px solid #000; width:100%; margin:18px 0; }
+        .thin-div    { border:none; border-top:1px solid #000; width:100%; margin:12px 0; }
+        .doc-type    { font-size:11pt; font-weight:bold; letter-spacing:2px; color:#555; margin:10px 0; }
+        .cover-title { font-size:20pt; font-weight:bold; margin:15px 0; line-height:1.4; }
+        .cover-sub   { font-size:13pt; font-weight:normal; margin-bottom:5px; }
+        .meta-table  { margin:20px auto; border-collapse:collapse; font-size:12pt; }
+        .meta-table td { padding:5px 15px; text-align:left; }
+        .meta-table td:first-child { font-weight:normal; min-width:180px; }
+        .meta-table td:last-child  { font-weight:bold; }
+
+        /* CONTENT */
+        .container { max-width:800px; margin:0 auto; padding:35px 65px; }
+        @media print {
+            .container { padding:20mm 28mm; }
+            .cover { padding:30mm; }
+            .page-break { page-break-before:always; }
+            .no-break { page-break-inside:avoid; }
+        }
+        .page-break { page-break-before:always; padding-top:15px; }
+
+        /* SECTION HEADER */
+        .bagian-header {
+            background:#2c3e50; color:white; text-align:center;
+            padding:12px 20px; margin:0 -65px 25px -65px;
+            font-size:14pt; font-weight:bold; letter-spacing:1px;
+        }
+        h1.doc-title { font-size:14pt; font-weight:bold; text-align:center; margin:20px 0 5px; text-transform:uppercase; }
+        h2.doc-sub   { font-size:12pt; text-align:center; margin-bottom:20px; font-style:italic; }
+        h2.section   { font-size:13pt; font-weight:bold; margin:22px 0 10px; }
+        h3.sub       { font-size:12pt; font-weight:bold; margin:16px 0 8px; }
+        p            { margin-bottom:10px; text-align:justify; }
+        ul, ol       { padding-left:22px; margin:8px 0; }
+        li           { margin:4px 0; }
+
+        /* TABLES */
+        table { width:100%; border-collapse:collapse; margin:12px 0; font-size:11pt; }
+        th  { background:#2c3e50; color:#fff; padding:8px 10px; text-align:center; border:1px solid #333; font-size:11pt; }
+        td  { padding:7px 10px; border:1px solid #888; vertical-align:top; font-size:11pt; }
+        tr:nth-child(even) { background:#f7f7f7; }
+        .meta-info td { border:1px solid #aaa; }
+        .meta-info th { background:#4a4a4a; }
+
+        /* CODE */
+        pre  { background:#f4f4f4; border:1px solid #ccc; border-radius:3px; padding:10px 14px; margin:10px 0; font-size:10pt; font-family:"Courier New",monospace; white-space:pre-wrap; word-break:break-all; }
+        code { font-family:"Courier New",monospace; background:#f0f0f0; padding:1px 4px; border-radius:2px; font-size:10pt; }
+
+        /* BADGES */
+        .badge { display:inline-block; padding:2px 10px; border-radius:10px; font-size:10pt; font-weight:bold; color:#fff; }
+        .cr    { background:#c0392b; }
+        .ma    { background:#e67e22; }
+        .mi    { background:#e6b800; color:#333; }
+        .ok    { background:#27ae60; }
+        .def   { background:#7f8c8d; }
+        .rej   { background:#c0392b; }
+        .pass  { background:#27ae60; }
+        .fail  { background:#c0392b; }
+        .info  { background:#2980b9; }
+
+        /* BOXES */
+        .note-box    { border-left:4px solid #2980b9; background:#eaf4fb; padding:10px 15px; margin:12px 0; border-radius:2px; font-size:11pt; }
+        .success-box { border-left:4px solid #27ae60; background:#eafaf1; padding:10px 15px; margin:12px 0; border-radius:2px; }
+        .warn-box    { border-left:4px solid #e67e22; background:#fdf3e7; padding:10px 15px; margin:12px 0; border-radius:2px; }
+
+        .text-center { text-align:center; }
+        .text-right  { text-align:right; }
+        .bold        { font-weight:bold; }
+        hr.sep       { border:none; border-top:1px solid #ccc; margin:20px 0; }
+        .sign-area   { margin-top:50px; text-align:center; }
+        .sign-line   { border-top:1px solid #000; width:220px; margin:5px auto 0; }
+    </style>
+</head>
+<body>
+
+<!-- ================================================================ -->
+<!--                       HALAMAN SAMPUL                             -->
+<!-- ================================================================ -->
+<div class="cover">
+    <div class="logo-box">
+        <h1>UNIVERSITAS ISLAM NEGERI SUNAN AMPEL SURABAYA</h1>
+        <h2>FAKULTAS SAINS DAN TEKNOLOGI</h2>
+        <p>PROGRAM STUDI SISTEM INFORMASI</p>
+    </div>
+    <hr class="divider">
+    <p class="doc-type">LAPORAN UJIAN AKHIR SEMESTER (UAS)</p>
+    <p class="cover-title">BUG RESOLUTION REPORT</p>
+    <p class="cover-sub">Pengujian Perangkat Lunak &mdash; Culturestone Web Application</p>
+    <hr class="thin-div">
+    <table class="meta-table">
+        <tr><td>Mata Kuliah</td><td>:</td><td>Pengujian Perangkat Lunak</td></tr>
+        <tr><td>Identitas Pengembang</td><td>:</td><td>Mohammad Farizal Sholahuddin Ghonni / H73222051</td></tr>
+        <tr><td>Sistem / Aplikasi</td><td>:</td><td>Culturestone Web Application</td></tr>
+        <tr><td>Repositori</td><td>:</td><td>github.com/mohfarizalsholahuddinghonniuisi23/Uas_ppl_webculturestonev2</td></tr>
+        <tr><td>Periode Resolusi Bug</td><td>:</td><td>Semester Genap 2026</td></tr>
+    </table>
+    <hr class="thin-div">
+    <p style="font-size:13pt; font-weight:bold; margin-top:15px;">SURABAYA &mdash; 2026</p>
+</div>
+
+<!-- ================================================================ -->
+<!--              BAGIAN A: DEVELOPER RESOLUTION REPORT               -->
+<!-- ================================================================ -->
+<div class="container page-break">
+    <div class="bagian-header">[BAGIAN A &mdash; LAPORAN DEVELOPER]</div>
+
+    <h1 class="doc-title">BUG RESOLUTION REPORT</h1>
+    <h2 class="doc-sub">Dokumen ini disusun oleh Developer sebagai bukti pertanggungjawaban penyelesaian bug,<br>pelaksanaan regression testing, dan evaluasi metrik kualitas akhir.</h2>
+
+    <table class="meta-info">
+        <tr><th colspan="2">IDENTITAS DOKUMEN</th></tr>
+        <tr><td width="200"><b>Mata Kuliah</b></td><td>Pengujian Perangkat Lunak</td></tr>
+        <tr><td><b>Nama Developer</b></td><td>Mohammad Farizal Sholahuddin Ghonni</td></tr>
+        <tr><td><b>NIM</b></td><td>H73222051</td></tr>
+        <tr><td><b>Sistem / Aplikasi</b></td><td>Culturestone Web Application (Go + React.js + MySQL)</td></tr>
+        <tr><td><b>Repositori Git</b></td><td>github.com/mohfarizalsholahuddinghonniuisi23/Uas_ppl_webculturestonev2</td></tr>
+        <tr><td><b>Periode Resolusi</b></td><td>Semester Genap, Minggu 12&ndash;15 (2026)</td></tr>
+    </table>
+</div>
+
+<!-- BAGIAN A - Bagian 1: Identitas Sistem -->
+<div class="container">
+    <h2 class="section">1. IDENTITAS SISTEM &amp; DEVELOPER</h2>
+    <table>
+        <tr><th width="50">No</th><th>Atribut</th><th>Detail</th></tr>
+        <tr><td>1.1</td><td>Nama Perangkat Lunak</td><td>Culturestone Web Application</td></tr>
+        <tr><td>1.2</td><td>Tautan Repositori (Git)</td><td>https://github.com/mohfarizalsholahuddinghonniuisi23/Uas_ppl_webculturestonev2</td></tr>
+        <tr><td>1.3</td><td>Branch Stabil</td><td><code>main</code></td></tr>
+        <tr><td>1.4</td><td>Stack Teknologi</td><td>Backend: Go (Gin) + MySQL | Frontend: React.js (Vite) + Tailwind CSS</td></tr>
+        <tr><td>1.5</td><td>Anggota (Developer)</td><td>Mohammad Farizal Sholahuddin Ghonni &mdash; H73222051</td></tr>
+    </table>
+</div>
+
+<!-- BAGIAN A - Bagian 2: Ringkasan Revisi -->
+<div class="container">
+    <h2 class="section">2. RINGKASAN REVISI &amp; PERBAIKAN</h2>
+    <p>
+        Setelah menerima laporan bug dari hasil peer-testing, tim developer (pengembang) telah melakukan serangkaian perbaikan kode secara komprehensif pada aplikasi web Culturestone Indonesia. Fokus perbaikan mencakup aspek keamanan autentikasi, sanitasi input, validasi file upload, penguatan password policy, serta perbaikan kualitas tampilan pada panel admin dan footer.
+    </p>
+    <p>
+        Total <strong>10 bug</strong> berhasil diidentifikasi dan diperbaiki, terdiri dari 2 bug Critical, 4 bug Major, dan 4 bug Minor. Seluruh perbaikan telah diverifikasi melalui pengujian unit (unit testing) dan pengujian integrasi (integration testing) menggunakan framework testing bawaan Go dengan database SQLite in-memory, menghasilkan <strong>46 test case dengan pass rate 100%</strong>.
+    </p>
+    <p>
+        Perbaikan dilakukan pada 8 file kode sumber yang tersebar di layer backend (Go) dan frontend (React.js), dengan tidak merusak fungsionalitas fitur-fitur lain yang sebelumnya telah berjalan normal.
+    </p>
+</div>
+
+<!-- BAGIAN A - Bagian 3: Tabel Resolusi Bug -->
+<div class="container page-break">
+    <h2 class="section">3. TABEL PELACAKAN &amp; RESOLUSI BUG (BUG RESOLUTION TRACKING)</h2>
+    <p>Menindaklanjuti temuan bug dari hasil pengujian, berikut adalah tindakan perbaikan yang telah dilakukan:</p>
+
+    <table>
+        <tr>
+            <th width="60">ID Bug</th>
+            <th width="120">Fitur / Modul</th>
+            <th>Deskripsi Bug Awal</th>
+            <th width="80">Severity</th>
+            <th width="70">Status Akhir</th>
+            <th>Solusi Perbaikan</th>
+        </tr>
+        <tr>
+            <td><b>BUG-01</b></td>
+            <td>Autentikasi Admin</td>
+            <td>Halaman login admin menampilkan tombol &ldquo;Daftar&rdquo; yang memungkinkan siapapun mendaftarkan akun admin baru tanpa otorisasi apapun.</td>
+            <td><span class="badge cr">Critical</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td><strong>(1) Backend:</strong> Ditambahkan pengecekan jumlah admin di database sebelum registrasi. Jika sudah ada admin, endpoint mengembalikan HTTP 403 Forbidden. Route <code>POST /api/register</code> dihapus dari public route. <strong>(2) Frontend:</strong> Tombol &ldquo;Daftar&rdquo; dan seluruh form registrasi dihapus dari <code>Login.jsx</code>. <strong>(3) Auto-seed:</strong> Admin dibuat otomatis dari variabel <code>ADMIN_USERNAME</code> dan <code>ADMIN_PASSWORD</code> di file <code>.env</code> saat server pertama kali dijalankan melalui fungsi <code>seedAdmin()</code> di <code>main.go</code>.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-02</b></td>
+            <td>Autentikasi Admin</td>
+            <td>Response API register mengembalikan objek admin lengkap termasuk field <code>Password</code> berisi hash bcrypt, sehingga hash bocor ke client.</td>
+            <td><span class="badge cr">Critical</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Ditambahkan tag <code>json:"-"</code> pada field Password di model Admin. Response register diubah hanya mengembalikan <code>message</code> dan <code>username</code>, tidak lagi mengirim objek admin.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-03</b></td>
+            <td>Upload File</td>
+            <td>Service upload file tidak memvalidasi jenis file. File berbahaya seperti <code>.exe</code>, <code>.php</code>, <code>.sh</code> dapat diunggah ke server.</td>
+            <td><span class="badge ma">Major</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Diterapkan dua lapis validasi: (1) whitelist ekstensi file (<code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, <code>.gif</code>, <code>.webp</code>, <code>.mp4</code>, <code>.mov</code>, <code>.avi</code>), dan (2) validasi MIME type dari 512 byte pertama isi file menggunakan <code>http.DetectContentType</code>.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-04</b></td>
+            <td>Form Kontak Publik</td>
+            <td>Input dari form kontak (Name, Phone, Email, Message) langsung disimpan ke database tanpa sanitasi, memungkinkan serangan Stored XSS.</td>
+            <td><span class="badge ma">Major</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Semua input disanitasi menggunakan <code>html.EscapeString</code> dari standard library Go sebelum disimpan ke database. Karakter berbahaya (<code>&lt;</code>, <code>&gt;</code>, <code>"</code>, <code>'</code>, <code>&amp;</code>) di-escape secara otomatis.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-05</b></td>
+            <td>Autentikasi Admin</td>
+            <td>Tidak ada validasi kekuatan password saat registrasi admin. Admin dapat mendaftar dengan password sangat sederhana seperti "1" atau string kosong.</td>
+            <td><span class="badge ma">Major</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Ditambahkan fungsi <code>validatePassword()</code> yang mewajibkan password minimal 8 karakter, mengandung minimal 1 huruf kapital, 1 huruf kecil, dan 1 angka.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-06</b></td>
+            <td>Form Kontak Publik</td>
+            <td>Input nomor HP tidak divalidasi sehingga menerima huruf dan karakter sembarang, menghasilkan data tidak valid di database.</td>
+            <td><span class="badge mi">Minor</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Frontend: Input <code>type="tel"</code> dengan filter realtime via <code>onChange</code> hanya mengizinkan angka, <code>+</code>, <code>-</code>, spasi. Backend: Validasi regex <code>^[0-9+-s]{8,20}$</code> sebelum simpan ke DB.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-07</b></td>
+            <td>Form Kontak Publik</td>
+            <td>Input nama tidak divalidasi sehingga menerima angka dan karakter aneh (contoh: "12345", "!!!@@@") sebagai nilai nama.</td>
+            <td><span class="badge mi">Minor</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Frontend: Filter realtime via <code>onChange</code> hanya mengizinkan huruf (termasuk unicode) dan spasi. Backend: Validasi regex <code>^[p{L}s]{2,100}$</code> sebelum simpan ke DB.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-08</b></td>
+            <td>Dashboard Admin</td>
+            <td>Dashboard admin menampilkan persentase hardcoded menyesatkan: "+5% bulan lalu", "+8% bulan lalu", "-3% minggu ini". Data ini tidak dihitung dari data real. Variabel <code>dummyStats</code> dan <code>dummyRecentOrders</code> tidak terpakai.</td>
+            <td><span class="badge mi">Minor</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Dihapus variabel <code>dummyStats</code> dan <code>dummyRecentOrders</code>. Semua teks persentase hardcoded diganti dengan label netral "Data dari database". Statistik sepenuhnya berasal dari API <code>GET /api/admin/stats</code>.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-09</b></td>
+            <td>Footer Publik</td>
+            <td>Ikon Instagram dan Facebook di footer menggunakan <code>href="#"</code> sehingga klik tidak mengarahkan ke halaman sosial media Culturestone.</td>
+            <td><span class="badge mi">Minor</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Ganti <code>href="#"</code> dengan URL sosial media aktif Culturestone. Ditambahkan <code>target="_blank"</code>, <code>rel="noopener noreferrer"</code>, dan <code>aria-label</code> untuk keamanan dan aksesibilitas.</td>
+        </tr>
+        <tr>
+            <td><b>BUG-10</b></td>
+            <td>Upload File</td>
+            <td>URL file yang diunggah di-generate dengan format hardcoded <code>http://localhost:8080/uploads/filename</code>. Saat di-deploy ke production, semua URL gambar tidak dapat diakses.</td>
+            <td><span class="badge ma">Major</span></td>
+            <td><span class="badge ok">Fixed</span></td>
+            <td>Base URL diambil dari environment variable <code>BASE_URL</code> di file <code>.env</code>. Jika kosong, fallback ke <code>http://localhost:8080</code>. Untuk production cukup ubah nilai <code>BASE_URL</code> tanpa menyentuh kode.</td>
+        </tr>
+    </table>
+
+    <div class="note-box" style="margin-top:15px;">
+        <strong>Catatan:</strong> Tidak ada bug dengan status <em>Deferred</em> atau <em>Rejected</em>. Seluruh 10 bug berhasil diperbaiki (status <span class="badge ok">Fixed</span>).
+    </div>
+</div>
+
+<!-- BAGIAN A - Bagian 4: Regression Testing -->
+<div class="container page-break">
+    <h2 class="section">4. LAPORAN PENGUJIAN REGRESI INTERNAL (INTERNAL REGRESSION TEST)</h2>
+    <p>
+        Untuk menjamin bahwa perubahan kode bug fixing tidak merusak fitur-fitur lain yang sebelumnya berjalan normal, tim telah menjalankan pengujian regresi fungsional lengkap mencakup seluruh 15 fitur utama aplikasi. Pengujian dilaksanakan menggunakan framework testing bawaan Go dengan database SQLite in-memory yang memastikan kondisi terisolasi dan reproduktif.
+    </p>
+
+    <table>
+        <tr>
+            <th width="80">ID Regresi</th>
+            <th width="160">Modul / Fitur Terkait</th>
+            <th>Kasus Uji Regresi yang Dijalankan Kembali</th>
+            <th width="80">Hasil</th>
+        </tr>
+        <tr>
+            <td>REG-001</td>
+            <td>Autentikasi &amp; JWT</td>
+            <td>Memastikan fungsi register admin, login, dan JWT middleware masih bekerja normal setelah penambahan validasi password dan pembatasan registrasi (BUG-01, 02, 05).</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-002</td>
+            <td>Form Kontak Publik</td>
+            <td>Memastikan pesan kontak tetap berhasil dikirim dan tersimpan di database setelah penambahan sanitasi XSS dan validasi input (BUG-04, 06, 07).</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-003</td>
+            <td>Upload File Admin</td>
+            <td>Memastikan upload gambar produk, portofolio, dan kategori masih berfungsi normal untuk file yang valid setelah penambahan whitelist validasi (BUG-03, 10).</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-004</td>
+            <td>CRUD Produk</td>
+            <td>Memastikan Create, Read, Update, Delete produk tidak terganggu setelah perbaikan service upload dan controller admin.</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-005</td>
+            <td>CRUD Portofolio</td>
+            <td>Memastikan operasi CRUD portofolio tidak terganggu pasca perubahan kode modul upload dan controller.</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-006</td>
+            <td>CRUD Kategori</td>
+            <td>Memastikan operasi CRUD kategori tidak terpengaruh oleh perubahan pada controller public dan service upload.</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-007</td>
+            <td>CRUD Testimoni</td>
+            <td>Memastikan operasi CRUD testimoni (termasuk relasi dengan Portfolio) masih berjalan normal.</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-008</td>
+            <td>Dashboard Admin Stats</td>
+            <td>Memastikan statistik dashboard (jumlah produk, portofolio, pesan, testimoni) masih ditampilkan dengan benar dari API setelah penghapusan data dummy (BUG-08).</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-009</td>
+            <td>Manajemen Pesan Admin</td>
+            <td>Memastikan admin masih dapat melihat dan menghapus pesan kontak yang masuk setelah perbaikan PostContact controller.</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+        <tr>
+            <td>REG-010</td>
+            <td>Proteksi JWT Middleware</td>
+            <td>Memastikan semua endpoint admin masih menolak request tanpa token atau dengan token invalid setelah seluruh perbaikan diterapkan.</td>
+            <td><span class="badge pass">Passed</span></td>
+        </tr>
+    </table>
+
+    <div class="success-box" style="margin-top:15px;">
+        <strong>Hasil:</strong> Seluruh 10 skenario regresi PASSED. Tidak ditemukan regression bug akibat perubahan kode perbaikan.
+    </div>
+
+    <h3 class="sub" style="margin-top:20px;">Detail Kasus Uji yang Dijalankan</h3>
+    <p>Pengujian regresi dijalankan melalui dua file test:</p>
+    <ul>
+        <li><code>code_testing/unit_test.go</code> &mdash; 26 test case unit (F01 hingga F15)</li>
+        <li><code>code_testing/integration_test.go</code> &mdash; 20 test case integrasi (F01-IT hingga F15-IT)</li>
+    </ul>
+    <p>Cara menjalankan:</p>
+    <pre>cd code_testing
+go test -v ./...          # Jalankan semua test
+# Output: PASS (46/46 test lulus)</pre>
+</div>
+
+<!-- BAGIAN A - Bagian 5: Software Metrics -->
+<div class="container page-break">
+    <h2 class="section">5. METRIK KUALITAS PERANGKAT LUNAK (SOFTWARE METRICS)</h2>
+    <p>Pengukuran kuantitatif dilakukan setelah seluruh perbaikan bug diterapkan untuk menilai tingkat kesehatan dan kualitas kode.</p>
+
+    <h3 class="sub">5.1 Test Coverage (Cakupan Pengujian)</h3>
+    <p>Pengujian otomatis menggunakan Go testing framework (<code>go test -cover</code>) menunjukkan cakupan sebagai berikut:</p>
+    <table>
+        <tr><th>Modul/Package</th><th>Test Cases</th><th>Fungsi Tercakup</th><th>Keterangan</th></tr>
+        <tr><td><code>controllers</code> (admin.go)</td><td>F01, F02, F13, F14 (unit + integrasi)</td><td>AdminRegister, AdminLogin, GetAdminStats, GetMessages, DeleteEntity</td><td>Seluruh endpoint admin</td></tr>
+        <tr><td><code>controllers</code> (public.go)</td><td>F03&ndash;F08 (unit + integrasi)</td><td>GetProducts, GetPortfolios, GetTestimoni, GetCategories, PostContact</td><td>Seluruh endpoint publik</td></tr>
+        <tr><td><code>middlewares</code></td><td>F15 (unit + integrasi)</td><td>JwtAuthMiddleware</td><td>Token valid/invalid/kosong</td></tr>
+        <tr><td><code>utils</code></td><td>F15-UT01&ndash;UT06</td><td>GenerateToken, ExtractToken, TokenValid</td><td>Seluruh JWT utilities</td></tr>
+        <tr><td><code>models</code></td><td>Melalui semua test DB</td><td>Admin, Product, Portfolio, Testimoni, Category, Message, Visitor</td><td>Melalui AutoMigrate + CRUD</td></tr>
+    </table>
+
+    <table style="margin-top:10px;">
+        <tr><th>Metrik</th><th>Nilai</th><th>Target Minimum</th><th>Status</th></tr>
+        <tr><td>Total Test Cases</td><td><strong>46</strong></td><td>&mdash;</td><td><span class="badge ok">OK</span></td></tr>
+        <tr><td>Test Pass Rate</td><td><strong>100% (46/46)</strong></td><td>80%</td><td><span class="badge ok">PASSED</span></td></tr>
+        <tr><td>Fitur Tercakup</td><td><strong>15/15 fitur</strong></td><td>80%</td><td><span class="badge ok">100%</span></td></tr>
+        <tr><td>Regression Bug Ditemukan</td><td><strong>0</strong></td><td>0</td><td><span class="badge ok">CLEAR</span></td></tr>
+        <tr><td>Build Status</td><td><strong>go build ./... &mdash; OK</strong></td><td>Build harus berhasil</td><td><span class="badge ok">SUCCESS</span></td></tr>
+    </table>
+
+    <h3 class="sub" style="margin-top:20px;">5.2 Defect Density (Kerapatan Defect)</h3>
+    <p>Berdasarkan rumusan metrik kualitas standar:</p>
+    <p style="text-align:center; font-style:italic; background:#f5f5f5; padding:8px; border:1px solid #ddd; border-radius:3px;">
+        <strong>Defect Density = Jumlah Total Defect / Ukuran Perangkat Lunak (KLOC)</strong>
+    </p>
+    <table>
+        <tr><th>Parameter</th><th>Nilai</th></tr>
+        <tr><td>Jumlah Defect Ditemukan</td><td>10 Bug (2 Critical + 4 Major + 4 Minor)</td></tr>
+        <tr><td>Jumlah Defect Diperbaiki</td><td>10 Bug (100%)</td></tr>
+        <tr><td>Estimasi Ukuran Kode Backend (Go)</td><td>&plusmn;1.8 KLOC (1800 baris)</td></tr>
+        <tr><td>Estimasi Ukuran Kode Frontend (React)</td><td>&plusmn;2.5 KLOC (2500 baris)</td></tr>
+        <tr><td>Total Ukuran Kode</td><td>&plusmn;4.3 KLOC</td></tr>
+        <tr><td><strong>Defect Density</strong></td><td><strong>10 / 4.3 = 2.33 Defect/KLOC</strong></td></tr>
+        <tr><td>Defect Density Setelah Perbaikan</td><td><strong>0 / 4.3 = 0.00 Defect/KLOC</strong></td></tr>
+    </table>
+
+    <h3 class="sub" style="margin-top:20px;">5.3 Ringkasan Bug Per Severity</h3>
+    <table>
+        <tr><th>Severity</th><th>Jumlah</th><th>Diperbaiki</th><th>Ditunda</th><th>Ditolak</th></tr>
+        <tr><td><span class="badge cr">Critical</span></td><td>2</td><td>2</td><td>0</td><td>0</td></tr>
+        <tr><td><span class="badge ma">Major</span></td><td>4</td><td>4</td><td>0</td><td>0</td></tr>
+        <tr><td><span class="badge mi">Minor</span></td><td>4</td><td>4</td><td>0</td><td>0</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>10</strong></td><td><strong>10</strong></td><td><strong>0</strong></td><td><strong>0</strong></td></tr>
+    </table>
+</div>
+
+<!-- BAGIAN A - Bagian 6: Repositori -->
+<div class="container">
+    <h2 class="section">6. TAUTAN REPOSITORI &amp; ARTEFAK FINAL</h2>
+    <p>Seluruh pembaruan kode, histori commit penyelesaian bug, dan test-suite dapat diakses melalui:</p>
+    <table>
+        <tr><th>Artefak</th><th>Detail</th></tr>
+        <tr><td>URL Repositori</td><td>https://github.com/mohfarizalsholahuddinghonniuisi23/Uas_ppl_webculturestonev2</td></tr>
+        <tr><td>Branch Stabil</td><td><code>main</code></td></tr>
+        <tr><td>Direktori Test</td><td><code>/code_testing/</code> (unit_test.go, integration_test.go, helpers_test.go)</td></tr>
+        <tr><td>File Perbaikan Backend</td><td><code>backend/main.go</code>, <code>backend/controllers/admin.go</code>, <code>backend/controllers/public.go</code>, <code>backend/models/admin.go</code>, <code>backend/services/blob_uploader.go</code>, <code>backend/.env</code></td></tr>
+        <tr><td>File Perbaikan Frontend</td><td><code>frontend/src/pages/Login.jsx</code>, <code>frontend/src/pages/Contact.jsx</code>, <code>frontend/src/pages/admin/AdminPanel.jsx</code>, <code>frontend/src/components/layout/Footer.jsx</code></td></tr>
+        <tr><td>Total File Diubah</td><td><strong>9 file</strong> (5 backend + 4 frontend)</td></tr>
+    </table>
+</div>
+
+<!-- BAGIAN A - Bagian 7: Kesimpulan Developer -->
+<div class="container">
+    <h2 class="section">7. KESIMPULAN KUALITAS INTERNAL</h2>
+    <p>
+        Berdasarkan hasil perbaikan kode dan pengujian regresi yang telah dilaksanakan, tim developer menyatakan bahwa:
+    </p>
+    <ol>
+        <li>Seluruh <strong>10 bug</strong> yang dilaporkan (2 Critical, 4 Major, 4 Minor) telah berhasil diperbaiki dengan status <strong>Fixed</strong>.</li>
+        <li>Tidak ditemukan <strong>regression bug</strong> akibat perubahan kode perbaikan berdasarkan hasil 46 test case regresi.</li>
+        <li>Metrik kualitas menunjukkan <strong>Defect Density 0.00 Defect/KLOC</strong> setelah perbaikan, menurun dari 2.33 Defect/KLOC sebelumnya.</li>
+        <li>Aplikasi web Culturestone dinyatakan <strong>layak untuk diserahkan ke Tim Tester</strong> guna dilakukan pengujian tahap 2 (retesting &amp; UAT).</li>
+    </ol>
+
+    <div class="warn-box">
+        <strong>Catatan Khusus:</strong> Untuk menjalankan aplikasi secara lokal, pastikan MySQL sudah berjalan dan nilai <code>DB_HOST</code>, <code>DB_USER</code>, <code>DB_NAME</code> di <code>backend/.env</code> telah disesuaikan. Akun admin dibuat <em>otomatis</em> saat pertama kali server dijalankan menggunakan nilai <code>ADMIN_USERNAME</code> dan <code>ADMIN_PASSWORD</code> yang telah ditetapkan di file <code>.env</code> (username: <code>adminculturestone</code>). Tidak perlu registrasi manual melalui UI maupun endpoint API.
+    </div>
+
+    <div class="sign-area">
+        <p>Surabaya, 16 Juli 2026</p>
+        <p style="margin-top:5px;">Mengetahui,<br>Perwakilan Developer</p>
+        <br><br><br>
+        <div class="sign-line"></div>
+        <p style="margin-top:5px;"><strong>Mohammad Farizal Sholahuddin Ghonni</strong></p>
+        <p>NIM: H73222051</p>
+    </div>
+</div>
+
+</body>
+</html>
